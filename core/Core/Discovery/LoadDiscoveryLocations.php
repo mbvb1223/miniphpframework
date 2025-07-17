@@ -18,10 +18,12 @@ class LoadDiscoveryLocations
 
     public function discoverAppNamespaces(): array
     {
-        $discoveredLocations[] = new DiscoveryLocation('Khien',
+        $discoveredLocations[] = new DiscoveryLocation(
+            'Khien',
             $this->kernel->root . '/app'
         );
-        return [];
+
+        return $discoveredLocations;
     }
 
 }
