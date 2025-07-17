@@ -7,10 +7,10 @@ use Khien\Core\Khien;
 use Khien\Http\RequestFactory;
 use Khien\Http\ResponseSender;
 
-class HttpApplication
+readonly class HttpApplication
 {
     public function __construct(
-        private readonly Container $container,
+        private Container $container,
     ) {}
 
     public static function boot(string $root): self
