@@ -19,10 +19,12 @@ class Kernel
     ): Kernel
     {
         $kernal = new self($root);
-        return $kernal->loadEnv();
+        return $kernal->loadEnv()
+            ->loadConfig()
+            ->loadDiscovery();
     }
 
-    public function loadEnv()
+    private function loadEnv()
     {
         $dotenv = Dotenv::createUnsafeImmutable($this->root);
         $dotenv->safeLoad();
@@ -30,7 +32,17 @@ class Kernel
         return $this;
     }
 
-    public function createContainer(): Container
+    private function loadConfig()
+    {
+        return $this;
+    }
+
+    private function loadDiscovery()
+    {
+        return $this;
+    }
+
+    private function createContainer(): Container
     {
         return new Container();
     }
