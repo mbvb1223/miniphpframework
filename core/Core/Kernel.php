@@ -8,6 +8,8 @@ use Khien\Container\Container;
 class Kernel
 {
     public readonly Container $container;
+    public array $discoveryLocations;
+    public array $discoveryClasses;
 
     public function __construct(public string $root)
     {
