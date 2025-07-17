@@ -2,7 +2,7 @@
 
 namespace Khien\Router;
 
-use http\Client\Response;
+use Khien\Http\Response;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 
 interface RouterInterface

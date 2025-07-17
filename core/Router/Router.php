@@ -2,14 +2,16 @@
 
 namespace Khien\Router;
 
+use Khien\Http\Response;
+use Psr\Http\Message\ServerRequestInterface;
+
 class Router implements RouterInterface
 {
-    public function dispatch(\Psr\Http\Message\ServerRequestInterface $request): \http\Client\Response
+    public function dispatch(ServerRequestInterface $request): Response
     {
-        // Here you would implement the logic to handle the request and return a response.
-        // This is just a placeholder implementation.
-        $response = new \http\Client\Response();
-        $response->setBody('Hello, world!');
+        $response = new Response();
+        $response->setStatus(200)
+                 ->setBody('Hello, World!');
 
         return $response;
     }
