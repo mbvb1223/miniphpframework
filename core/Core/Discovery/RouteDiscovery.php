@@ -3,10 +3,17 @@
 namespace Khien\Core\Discovery;
 
 use Khien\Core\Kernel;
+use Khien\Router\RouteTree;
 
-class RouteDiscovery
+class RouteDiscovery implements DiscoveryInterface
 {
-    public function discover(DiscoveryLocation $location, ClassReflector $class): void
+    use IsDiscovery;
+
+    public function __construct(Kernel $kernel, private RouteTree $routeTree)
+    {
+
+    }
+    public function discover(DiscoveryLocation $location, $class): void
     {
         foreach ($class->getPublicMethods() as $method) {
             $routeAttributes = $method->getAttributes(Route::class);
@@ -20,12 +27,7 @@ class RouteDiscovery
     public function apply(): void
     {
         foreach ($this->discoveryItems as [$method, $routeAttribute]) {
-            $route = DiscoveredRoute::fromRoute($routeAttribute, $method);
-            $this->configurator->addRoute($route);
-        }
-
-        if ($this->configurator->isDirty()) {
-            $this->routeConfig->apply($this->configurator->toRouteConfig());
+            $this->routeTree->addRoute($route);
         }
     }
 }
