@@ -4,6 +4,7 @@ namespace Khien\Core;
 
 use Dotenv\Dotenv;
 use Khien\Container\Container;
+use Khien\Core\Discovery\LoadDiscoveryLocations;
 
 class Kernel
 {
@@ -21,9 +22,11 @@ class Kernel
     ): Kernel
     {
         $kernal = new self($root);
-        return $kernal->loadEnv()
+        return $kernal
+            ->loadEnv()
+            ->registerKernel()
             ->loadConfig()
-            ->loadDiscovery();
+            ->loadDiscoveryLocations();
     }
 
     private function loadEnv()
@@ -34,13 +37,23 @@ class Kernel
         return $this;
     }
 
+    private function registerKernel()
+    {
+        $this->container->singleton(Kernel::class, $this);
+        $this->container->singleton(self::class, $this);
+
+        return $this;
+    }
+
     private function loadConfig()
     {
         return $this;
     }
 
-    private function loadDiscovery()
+    private function loadDiscoveryLocations()
     {
+        $this->container->invoke(LoadDiscoveryLocations::class);
+
         return $this;
     }
 
