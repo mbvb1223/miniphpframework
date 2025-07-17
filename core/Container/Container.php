@@ -3,12 +3,27 @@
 namespace Khien\Container;
 
 use ArrayIterator;
+use Closure;
 
 class Container
 {
     public function __construct(private ArrayIterator $singletons = new ArrayIterator())
     {
         // You can initialize any dependencies or services here if needed.
+    }
+
+    public function invoke($method, ...$params)
+    {
+        if (method_exists($method, '__invoke')) {
+            return $this->resolve($method)->__invoke(...);
+        }
+    }
+
+    public function singleton(string $className, mixed $definition): self
+    {
+        $this->singletons[$className] = $definition;
+
+        return $this;
     }
 
     public function setSingletons(array $singletons): self
@@ -44,14 +59,15 @@ class Container
         return $this->resolve($className);
     }
 
-    private function resolve(string $className): ?object
+    private function resolve(string $className, ...$params): ?object
     {
         if (class_exists($className)) {
             $reflection = new \ReflectionClass($className);
             if ($reflection->isInstantiable()) {
-                return $reflection->newInstanceArgs([]);
+                return $reflection->newInstanceArgs($params);
             }
         }
+
         return null;
     }
 }
