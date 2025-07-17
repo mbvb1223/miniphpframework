@@ -2,9 +2,16 @@
 
 namespace Khien\Core\Discovery;
 
-use Khien\Core\Kernel;
-
 class DiscoveryLocation
 {
+    public readonly string $namespace;
+    public readonly string $path;
 
+    public function __construct(
+        string $namespace,
+        string $path,
+    ) {
+        $this->namespace = $namespace;
+        $this->path = realpath(rtrim($path, '\\/'));
+    }
 }
