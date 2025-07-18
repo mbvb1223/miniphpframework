@@ -4,11 +4,13 @@ namespace Khien\Core;
 
 use Dotenv\Dotenv;
 use Khien\Container\Container;
+use Khien\Core\Discovery\DiscoveryLocation;
 use Khien\Core\Discovery\LoadDiscoveryLocations;
 
 class Kernel
 {
     public readonly Container $container;
+    /** @var DiscoveryLocation[] */
     public array $discoveryLocations;
     public array $discoveryClasses;
 
@@ -26,7 +28,8 @@ class Kernel
             ->loadEnv()
             ->registerKernel()
             ->loadConfig()
-            ->loadDiscoveryLocations();
+            ->loadDiscoveryLocations()
+            ->loadDiscovery();
     }
 
     private function loadEnv()
@@ -51,6 +54,13 @@ class Kernel
     }
 
     private function loadDiscoveryLocations()
+    {
+        $this->container->invoke(LoadDiscoveryLocations::class);
+
+        return $this;
+    }
+
+    private function loadDiscovery()
     {
         $this->container->invoke(LoadDiscoveryLocations::class);
 

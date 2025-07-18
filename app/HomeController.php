@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Khien\Router\Attributes\Get;
+
 class HomeController
 {
     #[Get('/')]

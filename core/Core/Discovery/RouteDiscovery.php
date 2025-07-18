@@ -3,6 +3,7 @@
 namespace Khien\Core\Discovery;
 
 use Khien\Core\Kernel;
+use Khien\Router\Attributes\Route;
 use Khien\Router\RouteTree;
 
 class RouteDiscovery implements DiscoveryInterface
@@ -27,7 +28,7 @@ class RouteDiscovery implements DiscoveryInterface
     public function apply(): void
     {
         foreach ($this->discoveryItems as [$method, $routeAttribute]) {
-            $this->routeTree->addRoute($route);
+            $this->routeTree->addRoute($method);
         }
     }
 }

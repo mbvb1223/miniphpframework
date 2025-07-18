@@ -7,7 +7,7 @@ use Khien\Core\Kernel;
 class LoadDiscoveryLocations
 {
     public function __construct(
-        private Kernel $kernel,
+        private readonly Kernel $kernel,
     ) {
     }
 
@@ -19,7 +19,7 @@ class LoadDiscoveryLocations
     public function discoverAppNamespaces(): array
     {
         $discoveredLocations[] = new DiscoveryLocation(
-            'Khien',
+            'App',
             $this->kernel->root . '/app'
         );
 
