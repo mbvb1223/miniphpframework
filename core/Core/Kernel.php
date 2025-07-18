@@ -4,8 +4,8 @@ namespace Khien\Core;
 
 use Dotenv\Dotenv;
 use Khien\Container\Container;
-use Khien\Core\Discovery\DiscoveryLocation;
-use Khien\Core\Discovery\LoadDiscoveryLocations;
+use Khien\Discovery\DiscoveryLocation;
+use Khien\Discovery\LoadDiscoveryLocations;
 
 class Kernel
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Khien\Core\Discovery;
+namespace Khien\Discovery;
 
-use Khien\Core\Kernel;
+use Khien\Core\Discovery\ClassReflector;
 
 interface DiscoveryInterface
 {

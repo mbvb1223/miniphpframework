@@ -1,6 +1,6 @@
 <?php
 
-namespace Khien\Core\Discovery;
+namespace Khien\Discovery;
 
 use Khien\Container\Container;
 use Khien\Core\Kernel;
