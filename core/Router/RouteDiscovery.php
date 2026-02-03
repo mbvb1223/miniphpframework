@@ -1,14 +1,12 @@
 <?php
 
-namespace App;
+namespace Khien\Router;
 
-use Khien\Discovery\DiscoveryInterface;
-use Khien\Discovery\DiscoveryItems;
-use Khien\Discovery\DiscoveryLocation;
 use Khien\Discovery\ClassReflector;
+use Khien\Discovery\DiscoveryInterface;
+use Khien\Discovery\DiscoveryLocation;
 use Khien\Discovery\IsDiscovery;
 use Khien\Router\Attributes\Route;
-use Khien\Router\RouteTree;
 use ReflectionAttribute;
 
 class RouteDiscovery implements DiscoveryInterface

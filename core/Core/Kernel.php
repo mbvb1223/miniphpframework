@@ -4,8 +4,11 @@ namespace Khien\Core;
 
 use Dotenv\Dotenv;
 use Khien\Container\Container;
+use Khien\Discovery\DiscoveryInterface;
+use Khien\Discovery\DiscoveryItems;
 use Khien\Discovery\DiscoveryLocation;
 use Khien\Discovery\LoadDiscoveryClasses;
+use Khien\Router\RouteDiscovery;
 use Khien\Router\RouteTree;
 
 class Kernel
@@ -14,6 +17,9 @@ class Kernel
 
     /** @var DiscoveryLocation[] */
     public array $discoveryLocations = [];
+
+    /** @var DiscoveryInterface[] */
+    public array $discoveries = [];
 
     public readonly string $root;
 
@@ -31,6 +37,7 @@ class Kernel
             ->loadEnv()
             ->registerCore()
             ->registerDiscoveryLocations()
+            ->registerFrameworkDiscoveries()
             ->runDiscovery();
     }
 
@@ -57,6 +64,15 @@ class Kernel
             'App',
             $this->root . '/app'
         );
+
+        return $this;
+    }
+
+    private function registerFrameworkDiscoveries(): self
+    {
+        $routeDiscovery = $this->container->get(RouteDiscovery::class);
+        $routeDiscovery->setItems(new DiscoveryItems());
+        $this->discoveries[] = $routeDiscovery;
 
         return $this;
     }
