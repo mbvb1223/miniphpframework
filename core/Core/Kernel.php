@@ -5,9 +5,10 @@ namespace Khien\Core;
 use Dotenv\Dotenv;
 use Khien\Container\Container;
 use Khien\Discovery\DiscoveryLocation;
+use Khien\Discovery\LoadDiscoveryClasses;
 use Khien\Discovery\LoadDiscoveryLocations;
 
-class Kernel
+class Kernel implements KernelInterface
 {
     public readonly Container $container;
     /** @var DiscoveryLocation[] */
@@ -42,7 +43,7 @@ class Kernel
 
     private function registerKernel()
     {
-        $this->container->singleton(Kernel::class, $this);
+        $this->container->singleton(KernelInterface::class, $this);
         $this->container->singleton(self::class, $this);
 
         return $this;
@@ -55,20 +56,23 @@ class Kernel
 
     private function loadDiscoveryLocations()
     {
-        $this->container->invoke(LoadDiscoveryLocations::class);
+        $this->container->invoke(LoadDiscoveryLocations::class, $this);
 
         return $this;
     }
 
     private function loadDiscovery()
     {
-        $this->container->invoke(LoadDiscoveryLocations::class);
+        $this->container->invoke(LoadDiscoveryClasses::class);
 
         return $this;
     }
 
     private function createContainer(): Container
     {
-        return new Container();
+        $container = new Container();
+        $container->singleton(Container::class, $container);
+
+        return $container;
     }
 }

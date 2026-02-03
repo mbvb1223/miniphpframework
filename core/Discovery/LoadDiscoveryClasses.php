@@ -36,7 +36,8 @@ class LoadDiscoveryClasses
 
             foreach ($files as $file) {
                 if (is_file($file)) {
-                    yield new DiscoveryClass($namespace, $file);
+                    $className = $namespace . '\\' . basename($file, '.php');
+                    yield new DiscoveryClass($namespace, $className);
                 }
             }
         }

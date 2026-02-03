@@ -1,8 +1,11 @@
 <?php
 
-namespace Khien\Discovery;
+namespace App;
 
 use Khien\Core\Kernel;
+use Khien\Discovery\DiscoveryInterface;
+use Khien\Discovery\DiscoveryLocation;
+use Khien\Discovery\IsDiscovery;
 use Khien\Router\Attributes\Route;
 use Khien\Router\RouteTree;
 
@@ -14,6 +17,7 @@ class RouteDiscovery implements DiscoveryInterface
     {
 
     }
+
     public function discover(DiscoveryLocation $location, $class): void
     {
         foreach ($class->getPublicMethods() as $method) {

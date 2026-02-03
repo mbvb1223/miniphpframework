@@ -15,7 +15,8 @@ class Container
     public function invoke($method, ...$params)
     {
         if (method_exists($method, '__invoke')) {
-            return $this->resolve($method)->__invoke(...);
+            $object = $this->resolve($method, ...$params);
+            return $object->__invoke();
         }
     }
 
