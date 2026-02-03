@@ -17,19 +17,16 @@ class LoadDiscoveryClasses
 
     public function __invoke(): void
     {
-        // First pass: collect all classes and register discovery implementations
-        $allClasses = [];
+        // Use framework-registered discoveries
+        $this->discoveries = $this->kernel->discoveries;
 
+        // Scan all locations and run discoveries
         foreach ($this->kernel->discoveryLocations as $location) {
             foreach ($this->getClassesInLocation($location) as $classReflector) {
-                $allClasses[] = [$location, $classReflector];
+                // Allow app to register custom discoveries too
                 $this->registerIfDiscovery($classReflector);
+                $this->runDiscoveries($location, $classReflector);
             }
-        }
-
-        // Second pass: run discoveries on all classes
-        foreach ($allClasses as [$location, $classReflector]) {
-            $this->runDiscoveries($location, $classReflector);
         }
 
         // Apply all discoveries
@@ -47,11 +44,18 @@ class LoadDiscoveryClasses
             return;
         }
 
-        $files = glob($location->path . '/*.php');
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($location->path, \FilesystemIterator::SKIP_DOTS)
+        );
 
-        foreach ($files as $file) {
-            if (is_file($file)) {
-                $className = $location->namespace . '\\' . basename($file, '.php');
+        foreach ($iterator as $file) {
+            if ($file->isFile() && $file->getExtension() === 'php') {
+                $relativePath = substr($file->getPathname(), strlen($location->path) + 1);
+                $className = $location->namespace . '\\' . str_replace(
+                    ['/', '.php'],
+                    ['\\', ''],
+                    $relativePath
+                );
 
                 if (class_exists($className)) {
                     yield new ClassReflector($className);
