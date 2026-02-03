@@ -57,18 +57,46 @@ class Container
      */
     public function get(string $className): mixed
     {
+        // Check singletons first
+        if (isset($this->singletons[$className])) {
+            return $this->singletons[$className];
+        }
+
         return $this->resolve($className);
     }
 
     private function resolve(string $className, ...$params): ?object
     {
-        if (class_exists($className)) {
-            $reflection = new \ReflectionClass($className);
-            if ($reflection->isInstantiable()) {
-                return $reflection->newInstanceArgs($params);
+        if (!class_exists($className)) {
+            return null;
+        }
+
+        $reflection = new \ReflectionClass($className);
+
+        if (!$reflection->isInstantiable()) {
+            return null;
+        }
+
+        $constructor = $reflection->getConstructor();
+
+        if ($constructor === null) {
+            return $reflection->newInstance();
+        }
+
+        // Resolve constructor dependencies
+        $dependencies = [];
+        foreach ($constructor->getParameters() as $parameter) {
+            $type = $parameter->getType();
+
+            if ($type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
+                $dependencies[] = $this->get($type->getName());
+            } elseif ($parameter->isDefaultValueAvailable()) {
+                $dependencies[] = $parameter->getDefaultValue();
+            } else {
+                $dependencies[] = null;
             }
         }
 
-        return null;
+        return $reflection->newInstanceArgs($dependencies);
     }
 }

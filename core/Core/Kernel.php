@@ -7,6 +7,7 @@ use Khien\Container\Container;
 use Khien\Discovery\DiscoveryLocation;
 use Khien\Discovery\LoadDiscoveryClasses;
 use Khien\Discovery\LoadDiscoveryLocations;
+use Khien\Router\RouteTree;
 
 class Kernel implements KernelInterface
 {
@@ -45,6 +46,7 @@ class Kernel implements KernelInterface
     {
         $this->container->singleton(KernelInterface::class, $this);
         $this->container->singleton(self::class, $this);
+        $this->container->singleton(RouteTree::class, new RouteTree());
 
         return $this;
     }

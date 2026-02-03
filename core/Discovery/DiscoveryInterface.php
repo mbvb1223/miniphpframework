@@ -2,7 +2,7 @@
 
 namespace Khien\Discovery;
 
-use Khien\Core\Discovery\ClassReflector;
+use Khien\Discovery\ClassReflector;
 
 interface DiscoveryInterface
 {

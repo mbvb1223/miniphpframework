@@ -21,7 +21,7 @@ class RouteDiscovery implements DiscoveryInterface
     public function discover(DiscoveryLocation $location, $class): void
     {
         foreach ($class->getPublicMethods() as $method) {
-            $routeAttributes = $method->getAttributes(Route::class);
+            $routeAttributes = $method->getAttributes(Route::class, \ReflectionAttribute::IS_INSTANCEOF);
 
             foreach ($routeAttributes as $routeAttribute) {
                 $this->discoveryItems->add($location, [$method, $routeAttribute]);
@@ -32,7 +32,12 @@ class RouteDiscovery implements DiscoveryInterface
     public function apply(): void
     {
         foreach ($this->discoveryItems as [$method, $routeAttribute]) {
-            $this->routeTree->addRoute($method);
+            $route = $routeAttribute->newInstance();
+            $handler = [
+                'class' => $method->getDeclaringClass()->getName(),
+                'method' => $method->getName(),
+            ];
+            $this->routeTree->addRoute($route->method, $route->uri, $handler);
         }
     }
 }
