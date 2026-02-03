@@ -15,9 +15,11 @@ class Kernel
     /** @var DiscoveryLocation[] */
     public array $discoveryLocations = [];
 
-    public function __construct(
-        public readonly string $root,
-    ) {
+    public readonly string $root;
+
+    public function __construct(string $root)
+    {
+        $this->root = rtrim($root, '/');
         $this->container = new Container();
     }
 
