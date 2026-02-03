@@ -32,8 +32,9 @@ Visit `http://localhost:8080` - that's it!
 ```
 miniphpframework/
 ├── app/                          # Your application code
-│   ├── HomeController.php        # Example controller
-│   └── RouteDiscovery.php        # Route discovery implementation
+│   ├── Controller/
+│   │   └── TestController.php    # Example controller with attributes
+│   └── HomeController.php        # Example controller
 ├── core/                         # Framework core
 │   ├── Container/
 │   │   └── Container.php         # Dependency injection container
@@ -57,10 +58,11 @@ miniphpframework/
 │       │   ├── Put.php
 │       │   └── Delete.php
 │       ├── HttpApplication.php   # Application entry
+│       ├── RouteDiscovery.php    # Route discovery implementation
 │       ├── Router.php            # Request dispatcher
 │       └── RouteTree.php         # Route storage/matching
 ├── public/
-│   └── index.php                 # Web entry point
+│   └── index.php                 # Web entry point.
 └── composer.json
 ```
 
@@ -127,7 +129,9 @@ public function showComment(string $postId, string $commentId)
 
 ## Discovery System
 
-The framework automatically discovers classes in the `app/` directory. To create a custom discovery:
+The framework automatically discovers classes in the `app/` directory. Framework discoveries (like `RouteDiscovery`) are registered in `Kernel::registerFrameworkDiscoveries()`. App discoveries placed in `app/` are automatically registered.
+
+To create a custom discovery:
 
 ```php
 <?php
@@ -214,7 +218,8 @@ Kernel::boot()
   ├── Load .env
   ├── Register singletons (Container, Kernel, RouteTree)
   ├── Register discovery locations (app/)
-  └── Run discovery (find routes, handlers, etc.)
+  ├── Register framework discoveries (RouteDiscovery)
+  └── Run discovery (scan app/, find routes, etc.)
        │
        ▼
 HttpApplication::run()
