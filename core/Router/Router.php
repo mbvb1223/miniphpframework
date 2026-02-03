@@ -7,13 +7,12 @@ use Khien\Http\Response;
 use Psr\Http\Message\ServerRequestInterface;
 use ReflectionMethod;
 
-class Router implements RouterInterface
+class Router
 {
     public function __construct(
         private RouteTree $routeTree,
         private Container $container,
-    ) {
-    }
+    ) {}
 
     public function dispatch(ServerRequestInterface $request): Response
     {

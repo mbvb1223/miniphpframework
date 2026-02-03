@@ -2,8 +2,6 @@
 
 namespace Khien\Discovery;
 
-use Khien\Discovery\ClassReflector;
-
 interface DiscoveryInterface
 {
     public function discover(DiscoveryLocation $location, ClassReflector $class): void;

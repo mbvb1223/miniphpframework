@@ -12,20 +12,10 @@ class DiscoveryItems implements IteratorAggregate
         private array $items = [],
     ) {}
 
-    public function addForLocation(DiscoveryLocation $location, array $values): self
-    {
-        $existingValues = $this->items[$location->path] ?? [];
-
-        $this->items[$location->path] = [...$existingValues, ...$values];
-
-        return $this;
-    }
-
     public function add(DiscoveryLocation $location, mixed $value): self
     {
         $this->items[$location->path] ??= [];
         $this->items[$location->path][] = $value;
-
         return $this;
     }
 
@@ -38,17 +28,6 @@ class DiscoveryItems implements IteratorAggregate
             }
         }
         return new ArrayIterator($allItems);
-    }
-
-    public function all(): array
-    {
-        $allItems = [];
-        foreach ($this->items as $locationItems) {
-            foreach ($locationItems as $item) {
-                $allItems[] = $item;
-            }
-        }
-        return $allItems;
     }
 
     public function count(): int

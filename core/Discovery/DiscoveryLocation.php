@@ -2,16 +2,10 @@
 
 namespace Khien\Discovery;
 
-class DiscoveryLocation
+readonly class DiscoveryLocation
 {
-    public readonly string $namespace;
-    public readonly string $path;
-
     public function __construct(
-        string $namespace,
-        string $path,
-    ) {
-        $this->namespace = $namespace;
-        $this->path = realpath(rtrim($path, '\\/'));
-    }
+        public string $namespace,
+        public string $path,
+    ) {}
 }

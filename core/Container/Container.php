@@ -2,76 +2,40 @@
 
 namespace Khien\Container;
 
-use ArrayIterator;
-use Closure;
+use ReflectionClass;
+use ReflectionNamedType;
 
 class Container
 {
-    public function __construct(private ArrayIterator $singletons = new ArrayIterator())
-    {
-        // You can initialize any dependencies or services here if needed.
-    }
+    private array $singletons = [];
 
-    public function invoke($method, ...$params)
+    public function singleton(string $id, mixed $concrete): self
     {
-        if (method_exists($method, '__invoke')) {
-            $object = $this->resolve($method, ...$params);
-            return $object->__invoke();
-        }
-    }
-
-    public function singleton(string $className, mixed $definition): self
-    {
-        $this->singletons[$className] = $definition;
-
+        $this->singletons[$id] = $concrete;
         return $this;
     }
 
-    public function setSingletons(array $singletons): self
+    public function get(string $id): mixed
     {
-        $this->singletons = new ArrayIterator($singletons);
-
-        return $this;
-    }
-
-    public function getSingletons(?string $interface = null): array
-    {
-        $singletons = $this->singletons->getArrayCopy();
-
-        if (is_null($interface)) {
-            return $singletons;
+        if (isset($this->singletons[$id])) {
+            return $this->singletons[$id];
         }
 
-        return array_filter(
-            array: $singletons,
-            callback: static fn (mixed $_, string $key) => str_starts_with($key, "{$interface}#") || $key === $interface,
-            mode: \ARRAY_FILTER_USE_BOTH,
-        );
+        return $this->resolve($id);
     }
 
-
-    /**
-     * @template TClassName of object
-     * @param class-string<TClassName> $className
-     * @return null|TClassName
-     */
-    public function get(string $className): mixed
+    public function has(string $id): bool
     {
-        // Check singletons first
-        if (isset($this->singletons[$className])) {
-            return $this->singletons[$className];
-        }
-
-        return $this->resolve($className);
+        return isset($this->singletons[$id]);
     }
 
-    private function resolve(string $className, ...$params): ?object
+    private function resolve(string $className): ?object
     {
         if (!class_exists($className)) {
             return null;
         }
 
-        $reflection = new \ReflectionClass($className);
+        $reflection = new ReflectionClass($className);
 
         if (!$reflection->isInstantiable()) {
             return null;
@@ -83,12 +47,12 @@ class Container
             return $reflection->newInstance();
         }
 
-        // Resolve constructor dependencies
         $dependencies = [];
+
         foreach ($constructor->getParameters() as $parameter) {
             $type = $parameter->getType();
 
-            if ($type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
+            if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
                 $dependencies[] = $this->get($type->getName());
             } elseif ($parameter->isDefaultValueAvailable()) {
                 $dependencies[] = $parameter->getDefaultValue();
@@ -98,5 +62,16 @@ class Container
         }
 
         return $reflection->newInstanceArgs($dependencies);
+    }
+
+    public function call(string $className): mixed
+    {
+        $instance = $this->get($className);
+
+        if ($instance && method_exists($instance, '__invoke')) {
+            return $instance();
+        }
+
+        return null;
     }
 }

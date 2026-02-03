@@ -6,8 +6,7 @@ class RouteTree
 {
     public function __construct(
         private array $routes = [],
-    ) {
-    }
+    ) {}
 
     public function addRoute(string $method, string $path, mixed $handler): void
     {
@@ -27,7 +26,7 @@ class RouteTree
     {
         $methodRoutes = $this->routes[$method] ?? [];
 
-        // First try exact match
+        // Try exact match first
         if (isset($methodRoutes[$path])) {
             return [
                 'handler' => $methodRoutes[$path],
@@ -49,10 +48,6 @@ class RouteTree
         return null;
     }
 
-    /**
-     * Match a dynamic route pattern against a path.
-     * Returns extracted params or null if no match.
-     */
     private function matchDynamicRoute(string $pattern, string $path): ?array
     {
         // Convert {param} to named capture groups
@@ -60,7 +55,6 @@ class RouteTree
         $regex = '#^' . $regex . '$#';
 
         if (preg_match($regex, $path, $matches)) {
-            // Filter to only named matches (params)
             return array_filter($matches, fn($key) => is_string($key), ARRAY_FILTER_USE_KEY);
         }
 

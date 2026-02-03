@@ -2,26 +2,30 @@
 
 namespace App;
 
-use Khien\Core\Kernel;
 use Khien\Discovery\DiscoveryInterface;
+use Khien\Discovery\DiscoveryItems;
 use Khien\Discovery\DiscoveryLocation;
+use Khien\Discovery\ClassReflector;
 use Khien\Discovery\IsDiscovery;
 use Khien\Router\Attributes\Route;
 use Khien\Router\RouteTree;
+use ReflectionAttribute;
 
 class RouteDiscovery implements DiscoveryInterface
 {
     use IsDiscovery;
 
-    public function __construct(Kernel $kernel, private RouteTree $routeTree)
-    {
+    public function __construct(
+        private RouteTree $routeTree,
+    ) {}
 
-    }
-
-    public function discover(DiscoveryLocation $location, $class): void
+    public function discover(DiscoveryLocation $location, ClassReflector $class): void
     {
         foreach ($class->getPublicMethods() as $method) {
-            $routeAttributes = $method->getAttributes(Route::class, \ReflectionAttribute::IS_INSTANCEOF);
+            $routeAttributes = $method->getAttributes(
+                Route::class,
+                ReflectionAttribute::IS_INSTANCEOF
+            );
 
             foreach ($routeAttributes as $routeAttribute) {
                 $this->discoveryItems->add($location, [$method, $routeAttribute]);

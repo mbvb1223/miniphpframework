@@ -2,7 +2,6 @@
 
 namespace Khien\Discovery;
 
-
 trait IsDiscovery
 {
     private DiscoveryItems $discoveryItems;

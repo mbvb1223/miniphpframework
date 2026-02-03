@@ -6,35 +6,33 @@ use Dotenv\Dotenv;
 use Khien\Container\Container;
 use Khien\Discovery\DiscoveryLocation;
 use Khien\Discovery\LoadDiscoveryClasses;
-use Khien\Discovery\LoadDiscoveryLocations;
 use Khien\Router\RouteTree;
 
-class Kernel implements KernelInterface
+class Kernel
 {
     public readonly Container $container;
+
     /** @var DiscoveryLocation[] */
-    public array $discoveryLocations;
-    public array $discoveryClasses;
+    public array $discoveryLocations = [];
 
-    public function __construct(public string $root)
-    {
-        $this->container = $container ?? $this->createContainer();
+    public function __construct(
+        public readonly string $root,
+    ) {
+        $this->container = new Container();
     }
 
-    public static function boot(
-        ?string $root = null,
-    ): Kernel
+    public static function boot(string $root): self
     {
-        $kernal = new self($root);
-        return $kernal
+        $kernel = new self($root);
+
+        return $kernel
             ->loadEnv()
-            ->registerKernel()
-            ->loadConfig()
-            ->loadDiscoveryLocations()
-            ->loadDiscovery();
+            ->registerCore()
+            ->registerDiscoveryLocations()
+            ->runDiscovery();
     }
 
-    private function loadEnv()
+    private function loadEnv(): self
     {
         $dotenv = Dotenv::createUnsafeImmutable($this->root);
         $dotenv->safeLoad();
@@ -42,39 +40,29 @@ class Kernel implements KernelInterface
         return $this;
     }
 
-    private function registerKernel()
+    private function registerCore(): self
     {
-        $this->container->singleton(KernelInterface::class, $this);
+        $this->container->singleton(Container::class, $this->container);
         $this->container->singleton(self::class, $this);
         $this->container->singleton(RouteTree::class, new RouteTree());
 
         return $this;
     }
 
-    private function loadConfig()
+    private function registerDiscoveryLocations(): self
     {
-        return $this;
-    }
-
-    private function loadDiscoveryLocations()
-    {
-        $this->container->invoke(LoadDiscoveryLocations::class, $this);
-
-        return $this;
-    }
-
-    private function loadDiscovery()
-    {
-        $this->container->invoke(LoadDiscoveryClasses::class);
+        $this->discoveryLocations[] = new DiscoveryLocation(
+            'App',
+            $this->root . '/app'
+        );
 
         return $this;
     }
 
-    private function createContainer(): Container
+    private function runDiscovery(): self
     {
-        $container = new Container();
-        $container->singleton(Container::class, $container);
+        $this->container->call(LoadDiscoveryClasses::class);
 
-        return $container;
+        return $this;
     }
 }

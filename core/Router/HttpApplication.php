@@ -3,9 +3,8 @@
 namespace Khien\Router;
 
 use Khien\Container\Container;
-use Khien\Core\Khien;
-use Khien\Http\RequestFactory;
-use Khien\Http\ResponseSender;
+use Khien\Core\Kernel;
+use Khien\Http\Request;
 
 readonly class HttpApplication
 {
@@ -15,26 +14,17 @@ readonly class HttpApplication
 
     public static function boot(string $root): self
     {
-        $container = Khien::boot($root);
-        $application = $container->get(HttpApplication::class);
+        $kernel = Kernel::boot($root);
 
-        return $application;
+        return $kernel->container->get(self::class);
     }
 
     public function run(): void
     {
         $router = $this->container->get(Router::class);
-        $psrRequest = $this->container->get(RequestFactory::class)->moke();
+        $request = Request::capture();
+        $response = $router->dispatch($request);
 
-        $responseSender = $this->container->get(ResponseSender::class);
-
-        $responseSender->send($router->dispatch($psrRequest));
-
-        $this->cleanup();
-    }
-
-    private function cleanup(): void
-    {
-
+        $response->send();
     }
 }

@@ -12,14 +12,14 @@ class LoadDiscoveryClasses
 
     public function __construct(
         private Kernel $kernel,
-        private readonly Container $container,
-    ) {
-    }
+        private Container $container,
+    ) {}
 
     public function __invoke(): void
     {
         // First pass: collect all classes and register discovery implementations
         $allClasses = [];
+
         foreach ($this->kernel->discoveryLocations as $location) {
             foreach ($this->getClassesInLocation($location) as $classReflector) {
                 $allClasses[] = [$location, $classReflector];
@@ -32,7 +32,10 @@ class LoadDiscoveryClasses
             $this->runDiscoveries($location, $classReflector);
         }
 
-        $this->applyAllDiscoveries();
+        // Apply all discoveries
+        foreach ($this->discoveries as $discovery) {
+            $discovery->apply();
+        }
     }
 
     /**
@@ -70,13 +73,6 @@ class LoadDiscoveryClasses
     {
         foreach ($this->discoveries as $discovery) {
             $discovery->discover($location, $classReflector);
-        }
-    }
-
-    private function applyAllDiscoveries(): void
-    {
-        foreach ($this->discoveries as $discovery) {
-            $discovery->apply();
         }
     }
 }
